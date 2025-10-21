@@ -1,13 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package reposteria.persistencia.dao;
 
-/**
- *
- * @author Windows
- */
-public class ClienteDAO {
-    
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public interface ClienteDAO {
+    void agregar(String nombre, String telefono, String direccion) throws SQLException;
+    ResultSet listar() throws SQLException;
 }

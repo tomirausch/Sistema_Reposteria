@@ -1,13 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package reposteria.persistencia.dao;
 
-/**
- *
- * @author Windows
- */
-public class TransaccionDAO {
-    
+import java.sql.SQLException;
+
+public interface TransaccionDAO {
+    void registrar(String tipo, double monto, String descripcion, String fecha) throws SQLException;
+    double[] generarReporte(String desde, String hasta) throws SQLException;
 }

@@ -15,11 +15,10 @@
     </properties>
 
     <dependencies>
-        <!-- SQLite JDBC Driver -->
         <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.46.1</version>
+          <groupId>org.xerial</groupId>
+          <artifactId>sqlite-jdbc</artifactId>
+          <version>3.50.3.0</version>
         </dependency>
     </dependencies>
 
