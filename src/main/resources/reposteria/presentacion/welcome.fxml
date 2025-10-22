@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="reposteria.presentacion.app.MenuController">
+
+    <!-- 🩷 Encabezado -->
+    <top>
+        <HBox id="header" alignment="CENTER_LEFT" prefHeight="138.0" prefWidth="900.0" spacing="10" style="-fx-background-color: #FADADD;">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+            <ImageView fitHeight="97.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@/reposteria/icons/logo.png" />
+                </image>
+            </ImageView>
+            <Label text="Batiendo con Amor" textAlignment="CENTER" textOverrun="CLIP">
+                <font>
+                    <Font name="Segoe Print Bold" size="35.0" />
+                </font>
+                <textFill>
+                    <LinearGradient endY="1.0" startX="1.0">
+                        <stops>
+                            <Stop>
+                                <color>
+                                    <Color red="1.0" green="0.6962962746620178" blue="0.8532098531723022" />
+                                </color>
+                            </Stop>
+                            <Stop offset="0.006729475100942127">
+                                <color>
+                                    <Color red="1.0" green="0.6962962746620178" blue="0.8532098531723022" />
+                                </color>
+                            </Stop>
+                            <Stop offset="0.9973082099596233">
+                                <color>
+                                    <Color red="1.0" green="0.018518518656492233" blue="0.5256173014640808" />
+                                </color>
+                            </Stop>
+                            <Stop offset="1.0">
+                                <color>
+                                    <Color red="1.0" green="0.018518518656492233" blue="0.5256173014640808" />
+                                </color>
+                            </Stop>
+                        </stops>
+                    </LinearGradient>
+                </textFill>
+            </Label>
+        </HBox>
+    </top>
+
+    <!-- 🧁 Sección central con GridPane y TabPane -->
+    <center>
+        <VBox>
+            <GridPane alignment="CENTER" hgap="30" prefHeight="402.0" prefWidth="900.0" style="-fx-background-color: #FFF6E9;" vgap="30">
+                <padding>
+                    <Insets bottom="30" left="30" right="30" top="30" />
+                </padding>
+
+                <!-- Clientes -->
+                <Button fx:id="btnClientes" alignment="BOTTOM_CENTER" contentDisplay="TOP" onAction="#switchToClientes" prefHeight="120" prefWidth="200" style="-fx-background-color: #FFE9E3;" text="Clientes" textAlignment="CENTER">
+                    <font>
+                        <Font name="Segoe Fluent Icons" size="22.0" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="48" fitWidth="48" nodeOrientation="INHERIT">
+                            <image>
+                                <Image url="@/reposteria/icons/cliente.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Pedidos -->
+                <Button fx:id="btnPedidos" alignment="BOTTOM_CENTER" contentDisplay="TOP" onAction="#switchToPedidos" prefHeight="120" prefWidth="200" style="-fx-background-color: #FFE9E3;" text="Pedidos" textAlignment="CENTER" GridPane.columnIndex="1">
+                    <font>
+                        <Font name="Segoe Fluent Icons" size="22.0" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="48" fitWidth="48">
+                            <image>
+                                <Image url="@/reposteria/icons/pedido.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Productos -->
+                <Button fx:id="btnProductos" alignment="BOTTOM_CENTER" contentDisplay="TOP" onAction="#switchToProductos" prefHeight="120" prefWidth="200" style="-fx-background-color: #FFE9E3;" text="Productos" GridPane.rowIndex="1">
+                    <font>
+                        <Font name="Segoe Fluent Icons" size="22.0" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="48" fitWidth="48">
+                            <image>
+                                <Image url="@/reposteria/icons/producto.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Egresos -->
+                <Button fx:id="btnEgresos" alignment="BOTTOM_CENTER" contentDisplay="TOP" onAction="#switchToEgresos" prefHeight="120" prefWidth="200" style="-fx-background-color: #FFE9E3;" text="Egresos" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="22.0" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="48" fitWidth="48">
+                            <image>
+                                <Image url="@/reposteria/icons/egreso.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+            </GridPane>
+        </VBox>
+    </center>
+
+    <!-- 📜 Pie de página -->
+    <bottom>
+        <HBox id="footer" alignment="CENTER" prefHeight="28.0" prefWidth="900.0" style="-fx-background-color: #FADADD;">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <Label alignment="CENTER" style="-fx-font-style: italic;" text="© 2025 Batiendo con Amor - Sistema Repostero" textFill="#4b3b40">
+                <font>
+                    <Font name="Rage Italic" size="12.0" />
+                </font>
+            </Label>
+        </HBox>
+    </bottom>
+</BorderPane>

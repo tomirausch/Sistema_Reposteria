@@ -31,4 +31,8 @@ public class Cliente {
     public String getNombreCompleto() {
         return nombre.get() + " " + apellido.get();
     }
+
+    public void setNombre(String nombre) {
+        this.nombre.set(nombre);
+    }
 }

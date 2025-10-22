@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "reposteria.Main",
+            "projectName": "reposteria"
+        },
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "reposteria.presentacion.App",
+            "projectName": "reposteria",
+            "vmArgs": "--module-path \"C:\\Users\\Windows\\.m2\\repository\\org\\openjfx\" --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}

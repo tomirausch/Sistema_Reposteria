@@ -57,4 +57,14 @@ public class GestorReposteria {
     public double[] generarReporte(String desde, String hasta) throws SQLException {
         return transaccionService.generarReporte(desde, hasta);
     }
+
+    public void eliminarCliente(int id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'eliminarCliente'");
+    }
+
+    public void modificarCliente(Cliente cliente) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'modificarCliente'");
+    }
 }

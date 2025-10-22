@@ -19,4 +19,11 @@ C:\Sistema_Reposteria\src\main\java\reposteria\persistencia\dao\impl\Transaccion
 C:\Sistema_Reposteria\src\main\java\reposteria\persistencia\dao\PedidoDAO.java
 C:\Sistema_Reposteria\src\main\java\reposteria\persistencia\dao\ProductoDAO.java
 C:\Sistema_Reposteria\src\main\java\reposteria\persistencia\dao\TransaccionDAO.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\App.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\ClientesController.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\EgresosController.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\MenuController.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\PedidosController.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\ProductosController.java
+C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\app\SceneManager.java
 C:\Sistema_Reposteria\src\main\java\reposteria\presentacion\Consola.java
