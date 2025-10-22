@@ -1,5 +1,6 @@
 package reposteria.persistencia.dao.impl;
 
+import reposteria.logica.Transaccion;
 import reposteria.persistencia.dao.TransaccionDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,49 +15,39 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     }
 
     @Override
-    public void registrar(String tipo, double monto, String descripcion, String fecha) throws SQLException {
+    public void registrar(Transaccion transaccion) throws SQLException {
         String sql = "INSERT INTO transacciones (tipo, monto, descripcion, fecha) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, tipo);
-            pstmt.setDouble(2, monto);
-            pstmt.setString(3, descripcion);
-            pstmt.setString(4, fecha);
+            pstmt.setString(1, transaccion.getTipo());
+            pstmt.setDouble(2, transaccion.getMonto());
+            pstmt.setString(3, transaccion.getDescripcion());
+            pstmt.setString(4, transaccion.getFecha());
             pstmt.executeUpdate();
-            System.out.println("Transacción " + tipo + " registrada.");
         }
     }
 
     @Override
     public double[] generarReporte(String desde, String hasta) throws SQLException {
-        double ingresos = 0, egresos = 0;
-
-        String sqlIngresos = "SELECT SUM(monto) FROM transacciones WHERE tipo = 'ingreso'";
+        String sql = "SELECT tipo, SUM(monto) as total FROM transacciones";
         if (desde != null && hasta != null) {
-            sqlIngresos += " AND fecha BETWEEN ? AND ?";
+            sql += " WHERE fecha BETWEEN ? AND ?";
         }
-        try (PreparedStatement pstmtIngresos = conn.prepareStatement(sqlIngresos)) {
+        sql += " GROUP BY tipo";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             if (desde != null && hasta != null) {
-                pstmtIngresos.setString(1, desde);
-                pstmtIngresos.setString(2, hasta);
+                pstmt.setString(1, desde);
+                pstmt.setString(2, hasta);
             }
-            ResultSet rsIngresos = pstmtIngresos.executeQuery();
-            ingresos = rsIngresos.next() ? rsIngresos.getDouble(1) : 0;
-        }
-
-        String sqlEgresos = "SELECT SUM(monto) FROM transacciones WHERE tipo = 'egreso'";
-        if (desde != null && hasta != null) {
-            sqlEgresos += " AND fecha BETWEEN ? AND ?";
-        }
-        try (PreparedStatement pstmtEgresos = conn.prepareStatement(sqlEgresos)) {
-            if (desde != null && hasta != null) {
-                pstmtEgresos.setString(1, desde);
-                pstmtEgresos.setString(2, hasta);
+            ResultSet rs = pstmt.executeQuery();
+            double ingresos = 0, egresos = 0;
+            while (rs.next()) {
+                if ("ingreso".equals(rs.getString("tipo"))) {
+                    ingresos = rs.getDouble("total");
+                } else if ("egreso".equals(rs.getString("tipo"))) {
+                    egresos = rs.getDouble("total");
+                }
             }
-            ResultSet rsEgresos = pstmtEgresos.executeQuery();
-            egresos = rsEgresos.next() ? rsEgresos.getDouble(1) : 0;
+            return new double[]{ingresos, egresos, ingresos - egresos};
         }
-
-        double balance = ingresos - egresos;
-        return new double[]{ingresos, egresos, balance};
     }
 }

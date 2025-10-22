@@ -5,8 +5,6 @@ import reposteria.persistencia.dao.impl.TransaccionDAOImpl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class TransaccionService {
     private final TransaccionDAO transaccionDAO;
@@ -15,14 +13,24 @@ public class TransaccionService {
         this.transaccionDAO = new TransaccionDAOImpl(conn);
     }
 
-    public void registrarEgreso(double monto, String descripcion) throws SQLException {
-        String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        transaccionDAO.registrar("egreso", monto, descripcion, fecha);
+    public void registrarEgreso(Transaccion transaccion) throws SQLException, ValidationException {
+        if (transaccion.getMonto() <= 0) {
+            throw new ValidationException("El monto debe ser mayor que 0.");
+        }
+        if (transaccion.getDescripcion() == null || transaccion.getDescripcion().trim().isEmpty()) {
+            throw new ValidationException("La descripción no puede estar vacía.");
+        }
+        if (transaccion.getDescripcion().length() < 3) {
+            throw new ValidationException("La descripción debe tener al menos 3 caracteres.");
+        }
+        if (!"egreso".equals(transaccion.getTipo())) {
+            throw new ValidationException("El tipo debe ser 'egreso'.");
+        }
+
+        transaccionDAO.registrar(transaccion);
     }
 
-    public void generarReporte(String desde, String hasta) throws SQLException {
-        double[] reporte = transaccionDAO.generarReporte(desde, hasta);
-        System.out.printf("Reporte: Ingresos %.2f, Egresos %.2f, Balance %.2f%n",
-                reporte[0], reporte[1], reporte[2]);
+    public double[] generarReporte(String desde, String hasta) throws SQLException {
+        return transaccionDAO.generarReporte(desde, hasta);
     }
 }

@@ -1,11 +1,11 @@
 package reposteria.persistencia.dao;
 
-import java.sql.ResultSet;
+import reposteria.logica.Producto;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface ProductoDAO {
-    void agregar(String nombre, double precio, int stock) throws SQLException;
-    ResultSet listar() throws SQLException;
-    void actualizarStock(int idProducto, int cantidad) throws SQLException;
+    void agregar(Producto producto) throws SQLException;
+    List<Producto> listar() throws SQLException;
     double getPrecio(int idProducto) throws SQLException;
 }

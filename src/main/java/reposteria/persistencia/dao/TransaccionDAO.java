@@ -1,8 +1,10 @@
 package reposteria.persistencia.dao;
 
+import reposteria.logica.Transaccion;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface TransaccionDAO {
-    void registrar(String tipo, double monto, String descripcion, String fecha) throws SQLException;
+    void registrar(Transaccion transaccion) throws SQLException;
     double[] generarReporte(String desde, String hasta) throws SQLException;
 }

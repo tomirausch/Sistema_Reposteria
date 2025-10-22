@@ -4,8 +4,8 @@ import reposteria.persistencia.dao.ProductoDAO;
 import reposteria.persistencia.dao.impl.ProductoDAOImpl;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ProductoService {
     private final ProductoDAO productoDAO;
@@ -14,22 +14,32 @@ public class ProductoService {
         this.productoDAO = new ProductoDAOImpl(conn);
     }
 
-    public void agregarProducto(String nombre, double precio, int stock) throws SQLException {
-        productoDAO.agregar(nombre, precio, stock);
-    }
-
-    public void listarProductos() throws SQLException {
-        ResultSet rs = productoDAO.listar();
-        while (rs.next()) {
-            System.out.println("Producto: " + rs.getString("nombre") + ", Precio: " + rs.getDouble("precio") + ", Stock: " + rs.getInt("stock"));
+    public void agregarProducto(Producto producto) throws SQLException, ValidationException {
+        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
+            throw new ValidationException("El nombre del producto no puede estar vacío.");
         }
+        if (producto.getNombre().length() < 3) {
+            throw new ValidationException("El nombre del producto debe tener al menos 3 caracteres.");
+        }
+        if (!producto.getNombre().matches("^[a-zA-Z0-9\\s]+$")) {
+            throw new ValidationException("El nombre del producto solo puede contener letras, números y espacios.");
+        }
+        if (producto.getPrecio() <= 0) {
+            throw new ValidationException("El precio debe ser mayor que 0.");
+        }
+
+        productoDAO.agregar(producto);
     }
 
-    public void actualizarStock(int idProducto, int cantidad) throws SQLException {
-        productoDAO.actualizarStock(idProducto, cantidad);
+    public List<Producto> listarProductos() throws SQLException {
+        return productoDAO.listar();
     }
 
-    public double getPrecio(int idProducto) throws SQLException {
-        return productoDAO.getPrecio(idProducto);
+    public double getPrecio(int idProducto) throws SQLException, ValidationException {
+        double precio = productoDAO.getPrecio(idProducto);
+        if (precio == 0) {
+            throw new ValidationException("El producto con ID " + idProducto + " no existe.");
+        }
+        return precio;
     }
 }

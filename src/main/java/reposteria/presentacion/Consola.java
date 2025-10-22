@@ -1,27 +1,19 @@
 package reposteria.presentacion;
 
-import reposteria.logica.ClienteService;
-import reposteria.logica.PedidoService;
-import reposteria.logica.ProductoService;
-import reposteria.logica.TransaccionService;
-
+import reposteria.logica.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Consola {
-    private ClienteService clienteService;
-    private ProductoService productoService;
-    private PedidoService pedidoService;
-    private TransaccionService transaccionService;
+    private final GestorReposteria gestor;
 
     public Consola(Connection conn) {
-        this.clienteService = new ClienteService(conn);
-        this.productoService = new ProductoService(conn);
-        this.pedidoService = new PedidoService(conn);
-        this.transaccionService = new TransaccionService(conn);
+        this.gestor = GestorReposteria.getInstancia(conn);
     }
 
     public void iniciar() {
@@ -45,31 +37,37 @@ public class Consola {
                     case 1:
                         System.out.print("Nombre: ");
                         String nombre = scanner.nextLine();
+                        System.out.print("Apellido: ");
+                        String apellido = scanner.nextLine();
                         System.out.print("Teléfono: ");
                         String telefono = scanner.nextLine();
                         System.out.print("Dirección: ");
                         String direccion = scanner.nextLine();
-                        clienteService.agregarCliente(nombre, telefono, direccion);
+                        gestor.agregarCliente(new Cliente(0, nombre, apellido, telefono, direccion));
                         break;
                     case 2:
-                        clienteService.listarClientes();
+                        List<Cliente> clientes = gestor.listarClientes();
+                        for (Cliente c : clientes) {
+                            System.out.println("Cliente: " + c.getNombreCompleto() + ", Tel: " + c.getTelefono());
+                        }
                         break;
                     case 3:
                         System.out.print("Nombre: ");
                         String prodNombre = scanner.nextLine();
                         System.out.print("Precio: ");
                         double precio = scanner.nextDouble();
-                        System.out.print("Stock: ");
-                        int stock = scanner.nextInt();
-                        productoService.agregarProducto(prodNombre, precio, stock);
+                        gestor.agregarProducto(new Producto(0, prodNombre, precio));
                         break;
                     case 4:
-                        productoService.listarProductos();
+                        List<Producto> productos = gestor.listarProductos();
+                        for (Producto p : productos) {
+                            System.out.println("Producto: " + p.getNombre() + ", Precio: " + p.getPrecio());
+                        }
                         break;
                     case 5:
                         System.out.print("ID Cliente: ");
                         int clienteId = scanner.nextInt();
-                        List<int[]> detalles = new ArrayList<>();
+                        List<DetallePedido> detalles = new ArrayList<>();
                         System.out.print("Cantidad de productos en el pedido: ");
                         int numDetalles = scanner.nextInt();
                         for (int i = 0; i < numDetalles; i++) {
@@ -77,12 +75,16 @@ public class Consola {
                             int prodId = scanner.nextInt();
                             System.out.print("Cantidad: ");
                             int cant = scanner.nextInt();
-                            detalles.add(new int[]{prodId, cant});
+                            detalles.add(new DetallePedido(0, 0, prodId, cant, 0));
                         }
-                        pedidoService.crearPedido(clienteId, detalles);
+                        String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                        gestor.crearPedido(new Pedido(0, clienteId, fecha, 0, detalles));
                         break;
                     case 6:
-                        pedidoService.listarPedidos();
+                        List<Pedido> pedidos = gestor.listarPedidos();
+                        for (Pedido p : pedidos) {
+                            System.out.println("Pedido ID: " + p.getId() + ", Cliente ID: " + p.getClienteId() + ", Total: " + p.getTotal());
+                        }
                         break;
                     case 7:
                         System.out.print("Monto: ");
@@ -90,14 +92,17 @@ public class Consola {
                         scanner.nextLine();
                         System.out.print("Descripción: ");
                         String desc = scanner.nextLine();
-                        transaccionService.registrarEgreso(monto, desc);
+                        String fechaEgreso = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                        gestor.registrarEgreso(new Transaccion(0, "egreso", monto, desc, fechaEgreso));
                         break;
                     case 8:
                         System.out.print("Fecha inicio (YYYY-MM-DD HH:MM:SS) o enter para todos: ");
                         String desde = scanner.nextLine();
                         System.out.print("Fecha fin (YYYY-MM-DD HH:MM:SS) o enter para todos: ");
                         String hasta = scanner.nextLine();
-                        transaccionService.generarReporte(desde.isEmpty() ? null : desde, hasta.isEmpty() ? null : hasta);
+                        double[] reporte = gestor.generarReporte(desde.isEmpty() ? null : desde, hasta.isEmpty() ? null : hasta);
+                        System.out.printf("Reporte: Ingresos %.2f, Egresos %.2f, Balance %.2f%n",
+                                reporte[0], reporte[1], reporte[2]);
                         break;
                     case 9:
                         scanner.close();
@@ -105,8 +110,12 @@ public class Consola {
                     default:
                         System.out.println("Opción inválida.");
                 }
+            } catch (ValidationException e) {
+                System.out.println("Error de validación: " + e.getMessage());
             } catch (SQLException e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println("Error de base de datos: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error inesperado: " + e.getMessage());
             }
         }
     }

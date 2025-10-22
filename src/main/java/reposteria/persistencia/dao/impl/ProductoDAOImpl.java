@@ -1,10 +1,13 @@
 package reposteria.persistencia.dao.impl;
 
+import reposteria.logica.Producto;
 import reposteria.persistencia.dao.ProductoDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductoDAOImpl implements ProductoDAO {
     private Connection conn;
@@ -14,32 +17,31 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public void agregar(String nombre, double precio, int stock) throws SQLException {
-        String sql = "INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)";
+    public void agregar(Producto producto) throws SQLException {
+        String sql = "INSERT INTO productos (nombre, precio) VALUES (?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, nombre);
-            pstmt.setDouble(2, precio);
-            pstmt.setInt(3, stock);
+            pstmt.setString(1, producto.getNombre());
+            pstmt.setDouble(2, producto.getPrecio());
             pstmt.executeUpdate();
             System.out.println("Producto agregado.");
         }
     }
 
     @Override
-    public ResultSet listar() throws SQLException {
+    public List<Producto> listar() throws SQLException {
+        List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM productos";
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        return pstmt.executeQuery();
-    }
-
-    @Override
-    public void actualizarStock(int idProducto, int cantidad) throws SQLException {
-        String sql = "UPDATE productos SET stock = stock - ? WHERE id = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, cantidad);
-            pstmt.setInt(2, idProducto);
-            pstmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                productos.add(new Producto(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getDouble("precio")
+                ));
+            }
         }
+        return productos;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class ProductoDAOImpl implements ProductoDAO {
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, idProducto);
             ResultSet rs = pstmt.executeQuery();
-            return rs.next() ? rs.getDouble(1) : 0;
+            return rs.next() ? rs.getDouble("precio") : 0;
         }
     }
 }

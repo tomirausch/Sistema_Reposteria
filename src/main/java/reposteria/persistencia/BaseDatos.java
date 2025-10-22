@@ -30,14 +30,14 @@ public class BaseDatos {
         stmt.execute("CREATE TABLE IF NOT EXISTS clientes (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
+                "apellido TEXT," + // Nueva columna
                 "telefono TEXT," +
                 "direccion TEXT" +
                 ")");
         stmt.execute("CREATE TABLE IF NOT EXISTS productos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
-                "precio REAL," +
-                "stock INTEGER" +
+                "precio REAL" +
                 ")");
         stmt.execute("CREATE TABLE IF NOT EXISTS pedidos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
