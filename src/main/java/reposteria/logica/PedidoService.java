@@ -28,15 +28,14 @@ public class PedidoService {
         // Validar cliente
         List<Cliente> clientes = clienteDAO.listar();
         boolean clienteExiste = clientes.stream().anyMatch(c -> c.getId() == pedido.getClienteId());
-        if (!clienteExiste) {
+        if (!clienteExiste) 
             throw new ValidationException("El cliente con ID " + pedido.getClienteId() + " no existe.");
-        }
-
+        
         // Validar detalles
         List<DetallePedido> detalles = pedido.getDetalles();
-        if (detalles == null || detalles.isEmpty()) {
+        if (detalles == null || detalles.isEmpty()) 
             throw new ValidationException("El pedido debe incluir al menos un producto.");
-        }
+        
         List<Producto> productos = productoDAO.listar();
         for (DetallePedido det : detalles) {
             int prodId = det.getProductoId();
