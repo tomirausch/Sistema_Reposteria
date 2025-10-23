@@ -135,7 +135,7 @@ public class Consola {
         System.out.print("Precio: ");
         double precio = scanner.nextDouble();
 
-        gestor.agregarProducto(new Producto(0, prodNombre, precio));
+        gestor.agregarProducto(new Producto(0, prodNombre, precio, prodNombre, precio));
     }
 
     private void listarProducto() throws SQLException, ValidationException{

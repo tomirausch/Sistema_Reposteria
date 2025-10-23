@@ -286,11 +286,6 @@ public class ClientesController {
         }
     }
 
-    @FXML
-    void volverMenu(ActionEvent event) throws IOException {
-        SceneManager.switchScene((Node) event.getSource(), "/reposteria/presentacion/welcome.fxml");
-    }
-
     private void mostrarAlertaInfo(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Éxito");
@@ -306,6 +301,11 @@ public class ClientesController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    @FXML
+    void volverMenu(ActionEvent event) throws IOException {
+        SceneManager.switchScene((Node) event.getSource(), "/reposteria/presentacion/welcome.fxml");
     }
 
     // Navegación superior

@@ -69,7 +69,7 @@
     <center>
         <VBox style="-fx-background-color: #FFE9E3;">
          <children>
-            <TableView maxWidth="846.0" prefHeight="386.0" prefWidth="846.0" style="-fx-background-color: #FFF6E9;">
+            <TableView fx:id="productosTable" maxWidth="846.0" prefHeight="386.0" prefWidth="846.0" style="-fx-background-color: #FFF6E9;">
               <columns>
                 <TableColumn prefWidth="57.599973320961" text="ID" />
                 <TableColumn prefWidth="623.9999771118164" text="Nombre" />

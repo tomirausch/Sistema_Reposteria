@@ -38,7 +38,9 @@ public class BaseDatos {
         stmt.execute("CREATE TABLE IF NOT EXISTS productos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
-                "precio REAL" +
+                "precio REAL," +
+                "unidad TEXT NOT NULL CHECK (UPPER(unidad) IN ('KG', 'DOCENA', 'CM'))," +
+                "medida REAL DEFAULT 0," +
                 "activo INTEGER DEFAULT 1" +
                 ")");
         stmt.execute("CREATE TABLE IF NOT EXISTS pedidos (" +

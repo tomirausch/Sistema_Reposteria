@@ -18,10 +18,12 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
     public void agregar(Producto producto) throws SQLException {
-        String sql = "INSERT INTO productos (nombre, precio) VALUES (?, ?)";
+        String sql = "INSERT INTO productos (nombre, precio, unidad, medida) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, producto.getNombre());
             pstmt.setDouble(2, producto.getPrecio());
+            pstmt.setString(3, producto.getUnidad());
+            pstmt.setDouble(4, producto.getMedida());
             pstmt.executeUpdate();
             System.out.println("Producto agregado.");
         }
@@ -37,7 +39,9 @@ public class ProductoDAOImpl implements ProductoDAO {
                 productos.add(new Producto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
-                        rs.getDouble("precio")
+                        rs.getDouble("precio"),
+                        rs.getString("unidad"),
+                        rs.getDouble("medida")
                 ));
             }
         }
