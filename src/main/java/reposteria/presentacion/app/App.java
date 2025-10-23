@@ -4,8 +4,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import reposteria.logica.GestorReposteria;
+import reposteria.persistencia.BaseDatos;
 
 public class App extends Application {
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+        GestorReposteria.getInstancia(BaseDatos.getInstance().getConnection());
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -16,6 +24,12 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception{
+        BaseDatos.getInstance().cerrar();
+        super.stop();
     }
 
     public static void main(String[] args) {

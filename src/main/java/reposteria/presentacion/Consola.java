@@ -1,6 +1,9 @@
 package reposteria.presentacion;
 
 import reposteria.logica.*;
+import reposteria.logica.Excepciones.TelefonoExistenteException;
+import reposteria.logica.Excepciones.ValidationException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -96,7 +99,7 @@ public class Consola {
         }
     }
 
-    private void agregarCliente() throws SQLException, ValidationException{
+    private void agregarCliente() throws SQLException, ValidationException, TelefonoExistenteException {
         System.out.println("///  NUEVO CLIENTE  ///");
 
         System.out.print("Nombre: ");

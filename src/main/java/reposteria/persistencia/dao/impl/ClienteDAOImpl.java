@@ -40,11 +40,49 @@ public class ClienteDAOImpl implements ClienteDAO {
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
+                        rs.getString("direccion"),
                         rs.getString("telefono"),
-                        rs.getString("direccion")
+                        rs.getInt("activo")
                 ));
             }
         }
         return clientes;
+    }
+
+    @Override
+    public void eliminar(int id) throws SQLException {
+        String sql = "UPDATE clientes SET activo = 0 WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Cliente eliminado.");
+        }
+    }
+
+    @Override
+    public void modificar(Cliente cliente) throws SQLException {
+        String sql = "UPDATE clientes SET nombre = ?, apellido = ?, telefono = ?, direccion = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, cliente.getNombre());
+            pstmt.setString(2, cliente.getApellido());
+            pstmt.setString(3, cliente.getTelefono());
+            pstmt.setString(4, cliente.getDireccion());
+            pstmt.setInt(5, cliente.getId());
+            pstmt.executeUpdate();
+            System.out.println("Cliente modificado.");
+        }
+    }
+
+    @Override
+    public void reactivar(Cliente cliente) throws SQLException {
+        String sql = "UPDATE clientes SET activo = 1 WHERE nombre = ? AND apellido = ? AND telefono = ? AND direccion = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, cliente.getNombre());
+            pstmt.setString(2, cliente.getApellido());
+            pstmt.setString(3, cliente.getTelefono());
+            pstmt.setString(4, cliente.getDireccion());
+            pstmt.executeUpdate();
+            System.out.println("Cliente reactivado.");
+        }
     }
 }

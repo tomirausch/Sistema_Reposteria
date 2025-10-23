@@ -1,5 +1,7 @@
 package reposteria.logica;
 
+import reposteria.logica.Excepciones.TelefonoExistenteException;
+import reposteria.logica.Excepciones.ValidationException;
 import reposteria.persistencia.dao.ClienteDAO;
 import reposteria.persistencia.dao.impl.ClienteDAOImpl;
 
@@ -14,56 +16,133 @@ public class ClienteService {
         this.clienteDAO = new ClienteDAOImpl(conn);
     }
 
-    public void agregarCliente(Cliente cliente) throws SQLException, ValidationException {
-
-        if(validarNombreApellido(cliente.getNombre(), cliente.getApellido()) &&
-           validarTelefono(cliente.getTelefono()) && validarDireccion(cliente.getDireccion()))
-            clienteDAO.agregar(cliente);
+    public void agregarCliente(Cliente cliente) throws SQLException, ValidationException, TelefonoExistenteException {
+        if (clienteValido(cliente)) {
+            if (telefonoExistente(cliente.getTelefono())) {
+                throw new TelefonoExistenteException("El número de teléfono ya está registrado para otro cliente.");
+            }
+            if(!existeCliente(cliente))
+                clienteDAO.agregar(cliente);
+            else
+                clienteDAO.reactivar(cliente);
+        }
     }
 
     public List<Cliente> listarClientes() throws SQLException {
         return clienteDAO.listar();
     }
 
-    private boolean validarNombreApellido(String nombre, String apellido) throws ValidationException{
-        if (nombre == null || nombre.trim().isEmpty()) 
-            throw new ValidationException("El nombre del cliente no puede estar vacío.");
-        
-        if (nombre.length() < 3) 
+    public void eliminarCliente(int id) throws SQLException {
+        clienteDAO.eliminar(id);
+    }
+
+    public void modificarCliente(Cliente cliente) throws SQLException, ValidationException {
+        if (clienteValido(cliente))
+            clienteDAO.modificar(cliente);
+    }
+
+    private boolean telefonoExistente(String telefono) {
+        try {
+            List<Cliente> clientes = clienteDAO.listar();
+            for (Cliente c : clientes) {
+                if (c.getTelefono().equals(telefono) && c.isActivo()) 
+                    return true;
+                
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean existeCliente(Cliente cliente) throws SQLException {
+        List<Cliente> clientes = clienteDAO.listar();
+        for (Cliente c : clientes) {
+            if (c.getNombre().equalsIgnoreCase(cliente.getNombre()) &&
+                c.getApellido().equalsIgnoreCase(cliente.getApellido()) &&
+                c.getTelefono().equals(cliente.getTelefono()) &&
+                c.getDireccion().equalsIgnoreCase(cliente.getDireccion())) 
+                return true;
+        }
+        return false;
+    }
+
+    public boolean clienteValido(Cliente cliente) throws ValidationException {
+        String nombre = normalizarNombre(cliente.getNombre());
+        String apellido = normalizarNombre(cliente.getApellido());
+        String telefono = cliente.getTelefono();
+        String direccion = normalizarDireccion(cliente.getDireccion());
+
+        if (nombre == null) 
             throw new ValidationException("El nombre del cliente debe tener al menos 3 caracteres.");
         
         if (!nombre.matches("^[a-zA-Z\\s]+$")) 
             throw new ValidationException("El nombre del cliente solo puede contener letras y espacios.");
         
-        if (apellido == null || apellido.trim().isEmpty())
-            throw new ValidationException("El apellido del cliente no puede estar vacío.");
-        
-        if (apellido.length() < 3)
+        if (apellido == null)
             throw new ValidationException("El apellido del cliente debe tener al menos 3 caracteres.");
         
         if (!apellido.matches("^[a-zA-Z\\s]+$")) 
             throw new ValidationException("El apellido del cliente solo puede contener letras y espacios.");
         
+        if (!validarTelefono(telefono))
+            throw new ValidationException("El número de teléfono ingresado no es válido.");
+        
+        if (direccion == null)
+            throw new ValidationException("La dirección del cliente debe tener al menos 3 caracteres.");
+        
+        cliente.setNombre(nombre);
+        cliente.setApellido(apellido);
+        cliente.setDireccion(direccion);
         return true;
+    }
+
+    private String normalizarNombre(String nombre){
+        if (nombre == null || nombre.isBlank()) return null;
+
+        // Divide en palabras
+        String[] palabras = nombre.trim().split("\\s+");
+
+        // Verifica que cada palabra tenga al menos 3 letras
+        for (String palabra : palabras) {
+            if (palabra.length() < 3) {
+                return null;
+            }
+        }
+
+        // Convierte a mayúsculas
+        return nombre.toUpperCase();
     }
 
     private boolean validarTelefono(String telefono) throws ValidationException{
-        if (telefono == null || telefono.trim().isEmpty()) 
-            throw new ValidationException("El teléfono no puede estar vacío.");
-        
-        if (!telefono.matches("^\\d{8,12}$")) 
-            throw new ValidationException("El teléfono debe contener solo números y tener entre 8 y 12 dígitos.");
+        // Elimina guiones y espacios para validar solo los dígitos
+        String soloNumeros = telefono.replaceAll("[\\s-]", "");
+
+        // Debe tener entre 8 y 15 dígitos (según formato)
+        if (!soloNumeros.matches("\\d{8,15}")) {
+            return false;
+        }
 
         return true;
     }
 
-    private boolean validarDireccion(String direccion) throws ValidationException{
-        if (direccion == null || direccion.trim().isEmpty()) 
-            throw new ValidationException("La dirección no puede estar vacía.");
+    private String normalizarDireccion(String direccion) throws ValidationException{
+        if (direccion == null || direccion.isBlank()) return null;
 
-        if (direccion.length() < 5) 
-            throw new ValidationException("La dirección debe tener al menos 5 caracteres.");
-        
-        return true;
+
+        // Divide en palabras
+        String[] palabras = direccion.trim().split("\\s+");
+
+        // Verifica que cada palabra tenga al menos 3 letras
+        for (String palabra : palabras) {
+            if (palabra.length() < 3) {
+                return null;
+            }
+        }
+
+        // Convierte a mayúsculas
+        return direccion.toUpperCase();
     }
+
 }

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import reposteria.logica.Excepciones.*;
+
 public class GestorReposteria {
     private static GestorReposteria instancia;
     private final ClienteService clienteService;
@@ -26,12 +28,19 @@ public class GestorReposteria {
         return instancia;
     }
 
-    public void agregarCliente(Cliente cliente) throws SQLException, ValidationException {
+    public void agregarCliente(Cliente cliente) throws SQLException, ValidationException, TelefonoExistenteException {
         clienteService.agregarCliente(cliente);
     }
 
     public List<Cliente> listarClientes() throws SQLException {
         return clienteService.listarClientes();
+    }
+    public void eliminarCliente(int id) throws SQLException {
+        clienteService.eliminarCliente(id);
+    }
+
+    public void modificarCliente(Cliente cliente) throws SQLException, ValidationException {
+        clienteService.modificarCliente(cliente);
     }
 
     public void agregarProducto(Producto producto) throws SQLException, ValidationException {
@@ -58,13 +67,7 @@ public class GestorReposteria {
         return transaccionService.generarReporte(desde, hasta);
     }
 
-    public void eliminarCliente(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminarCliente'");
-    }
-
-    public void modificarCliente(Cliente cliente) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'modificarCliente'");
+    public void validarCliente(Cliente cliente) throws ValidationException {
+        clienteService.clienteValido(cliente);
     }
 }

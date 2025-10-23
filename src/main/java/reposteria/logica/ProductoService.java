@@ -1,5 +1,6 @@
 package reposteria.logica;
 
+import reposteria.logica.Excepciones.ValidationException;
 import reposteria.persistencia.dao.ProductoDAO;
 import reposteria.persistencia.dao.impl.ProductoDAOImpl;
 

@@ -1,4 +1,3 @@
-reposteria\presentacion\Consola.class
 reposteria\logica\ClienteService.class
 reposteria\logica\Pedido.class
 reposteria\logica\TransaccionService.class
@@ -18,7 +17,6 @@ reposteria\presentacion\app\MenuController.class
 reposteria\persistencia\BaseDatos.class
 reposteria\presentacion\app\App.class
 reposteria\logica\Producto.class
-reposteria\logica\ValidationException.class
 reposteria\presentacion\app\SceneManager.class
 reposteria\persistencia\dao\impl\ClienteDAOImpl.class
 reposteria\presentacion\app\EgresosController.class
