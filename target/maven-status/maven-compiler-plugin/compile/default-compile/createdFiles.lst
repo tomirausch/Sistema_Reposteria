@@ -1,4 +1,6 @@
+reposteria\presentacion\Consola.class
 reposteria\logica\ClienteService.class
+reposteria\logica\Excepciones\TelefonoExistenteException.class
 reposteria\logica\Pedido.class
 reposteria\logica\TransaccionService.class
 reposteria\persistencia\dao\impl\PedidoDAOImpl.class
@@ -24,4 +26,5 @@ reposteria\persistencia\dao\ProductoDAO.class
 reposteria\logica\GestorReposteria.class
 reposteria\persistencia\dao\PedidoDAO.class
 reposteria\logica\Cliente.class
+reposteria\logica\Excepciones\ValidationException.class
 reposteria\persistencia\dao\ClienteDAO.class

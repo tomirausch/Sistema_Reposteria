@@ -6,12 +6,26 @@ public class Producto {
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty nombre = new SimpleStringProperty();
     private final DoubleProperty precio = new SimpleDoubleProperty();
+    private final StringProperty unidad = new SimpleStringProperty();
+    private final DoubleProperty medida = new SimpleDoubleProperty();
     private final BooleanProperty activo = new SimpleBooleanProperty();
 
-    public Producto(int id, String nombre, double precio) {
+    public Producto(int id, String nombre, double precio, String unidad, double medida){ 
         this.id.set(id);
         this.nombre.set(nombre);
         this.precio.set(precio);
+        this.nombre.set(nombre);
+        this.precio.set(precio);
+        this.unidad.set(unidad);
+        this.medida.set(medida);
+        this.activo.set(true);
+    }
+
+    public Producto(String nombre, double precio, String unidad, double medida){
+        this.nombre.set(nombre);
+        this.precio.set(precio);
+        this.unidad.set(unidad);
+        this.medida.set(medida);
         this.activo.set(true);
     }
 
@@ -22,6 +36,10 @@ public class Producto {
     public double getPrecio() { return precio.get(); }
     public DoubleProperty precioProperty() { return precio; }
     public BooleanProperty activoProperty() { return activo; }
-    public Boolean borrado() { return activo.get(); }
+    public Boolean isActivo() { return activo.get(); }
     public void setActivo(Boolean activo) { this.activo.setValue(activo); }
+    public String getUnidad() { return unidad.get(); }
+    public StringProperty unidadProperty() { return unidad; }
+    public double getMedida() { return medida.get(); }
+    public DoubleProperty medidaProperty() { return medida; }
 }
