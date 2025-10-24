@@ -5,6 +5,8 @@ reposteria\logica\Pedido.class
 reposteria\logica\TransaccionService.class
 reposteria\persistencia\dao\impl\PedidoDAOImpl.class
 reposteria\persistencia\dao\impl\ProductoDAOImpl.class
+reposteria\logica\Variante.class
+reposteria\logica\VarianteService.class
 reposteria\Main.class
 reposteria\presentacion\app\ClientesController.class
 reposteria\persistencia\dao\TransaccionDAO.class
@@ -16,10 +18,12 @@ reposteria\presentacion\app\ProductosController.class
 reposteria\logica\PedidoService.class
 reposteria\logica\ProductoService.class
 reposteria\presentacion\app\MenuController.class
+reposteria\persistencia\dao\VarianteDAO.class
 reposteria\persistencia\BaseDatos.class
 reposteria\presentacion\app\App.class
 reposteria\logica\Producto.class
 reposteria\presentacion\app\SceneManager.class
+reposteria\persistencia\dao\impl\VarianteDAOImpl.class
 reposteria\persistencia\dao\impl\ClienteDAOImpl.class
 reposteria\presentacion\app\EgresosController.class
 reposteria\persistencia\dao\ProductoDAO.class

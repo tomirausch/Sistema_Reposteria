@@ -16,14 +16,21 @@ public class ProductoService {
     }
 
     public void agregarProducto(Producto producto) throws SQLException, ValidationException {
-        if (esNombreValido(producto.getNombre())){
-            if (!esNombreUnico(producto.getNombre())) 
-                throw new ValidationException("El nombre del producto ya existe.");
-            else if(esPrecioValido(producto.getPrecio())) {
-                productoDAO.agregar(producto);
+        if (productoValido(producto)) {
+            if (!esNombreUnico(producto.getNombre())) {
+                throw new ValidationException("El nombre del producto ya está registrado en el sistema.");
             }
+            if(!existeProducto(producto))
+                productoDAO.agregar(producto);
+            else
+                productoDAO.reactivar(producto);
         }
 
+    }
+
+    public void modificarProducto(Producto producto) throws ValidationException, SQLException {
+        if (productoValido(producto))
+            productoDAO.modificar(producto);
     }
 
     public List<Producto> listarProductos() throws SQLException {
@@ -48,25 +55,65 @@ public class ProductoService {
         return true;
     }
 
-    private boolean esPrecioValido(double precio) throws ValidationException {
-        if (precio < 0) {
-            throw new ValidationException("El precio del producto no puede ser negativo.");
-        }
+    public boolean productoValido(Producto producto) throws ValidationException {
+        String nombre = normalizarString(producto.getNombre());
+        double precio = producto.getPrecio();
+        String unidad = normalizarString(producto.getUnidad());
+        double medida = producto.getMedida();
 
-        return true;
-    }
-
-    private boolean esNombreValido(String nombre) throws ValidationException {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new ValidationException("El nombre del producto no puede estar vacío.");
-        }
-        if (nombre.length() < 3) {
+        if (nombre == null) 
             throw new ValidationException("El nombre del producto debe tener al menos 3 caracteres.");
-        }
-        if (!nombre.matches("^[a-zA-Z0-9\\s]+$")) {
-            throw new ValidationException("El nombre del producto solo puede contener letras, números y espacios.");
+        
+        if (!nombre.matches("^[a-zA-Z\\s]+$")) 
+            throw new ValidationException("El nombre del producto solo puede contener letras y espacios.");
+
+        if (unidad == null){
+            throw new ValidationException("La unidad del producto debe tener al menos 2 caracteres.");
         }
 
+        if (precio < 1) {
+            throw new ValidationException("El precio debe ser mayor a 0.");
+        }
+
+        if ("CM".equalsIgnoreCase(unidad) && medida < 1) {
+            throw new ValidationException("La medida debe ser mayor a 0.");
+        }
+        if (!"CM".equalsIgnoreCase(unidad)) {
+            producto.setMedida(0); // normaliza para persistir
+    }
+        
+        producto.setNombre(nombre);
+        producto.setUnidad(unidad);
         return true;
     }
+
+    private boolean existeProducto(Producto producto) throws SQLException{
+        List<Producto> productos = productoDAO.listar();
+        for (Producto p : productos) {
+            if (p.getNombre().equalsIgnoreCase(producto.getNombre()) &&
+                p.getPrecio() == producto.getPrecio() &&
+                p.getUnidad().equals(producto.getUnidad()) &&
+                p.getMedida() == producto.getMedida()) 
+                return true;
+        }
+        return false;
+    }
+
+    private String normalizarString(String cadena){
+        if (cadena == null || cadena.isBlank()) return null;
+
+        // Divide en palabras
+        String[] palabras = cadena.trim().split("\\s+");
+
+        // Verifica que cada palabra tenga al menos 3 letras
+        for (String palabra : palabras) {
+            if (palabra.length() < 2) {
+                return null;
+            }
+        }
+
+        // Convierte a mayúsculas
+        return cadena.toUpperCase();
+    }
+
 }
