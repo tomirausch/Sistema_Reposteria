@@ -38,10 +38,18 @@ public class BaseDatos {
         stmt.execute("CREATE TABLE IF NOT EXISTS productos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
-                "precio REAL," +
+                "precio_base REAL," +
                 "unidad TEXT NOT NULL CHECK (UPPER(unidad) IN ('KG', 'DOCENA', 'CM'))," +
                 "medida REAL DEFAULT 0," +
                 "activo INTEGER DEFAULT 1" +
+                ")");
+        stmt.execute("CREATE TABLE IF NOT EXISTS variante (" +
+                "id_variante INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_producto INTEGER NOT NULL, " +
+                "descripcion TEXT NOT NULL," +
+                "precio_extra REAL DEFAULT 0," +
+                "activo BOOLEAN DEFAULT TRUE," +
+                "FOREIGN KEY (id_producto) REFERENCES producto(id_producto)" +
                 ")");
         stmt.execute("CREATE TABLE IF NOT EXISTS pedidos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
