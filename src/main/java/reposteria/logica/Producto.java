@@ -42,4 +42,9 @@ public class Producto {
     public StringProperty unidadProperty() { return unidad; }
     public double getMedida() { return medida.get(); }
     public DoubleProperty medidaProperty() { return medida; }
+
+    public void setNombre(String nombre) { this.nombre.set(nombre); }
+    public void setPrecio(double precio) { this.precioBase.set(precio); }
+    public void setUnidad(String unidad) { this.unidad.set(unidad); }
+    public void setMedida(double medida) { this.medida.set(medida); }
 }

@@ -8,4 +8,6 @@ public interface ProductoDAO {
     void agregar(Producto producto) throws SQLException;
     List<Producto> listar() throws SQLException;
     double getPrecio(int idProducto) throws SQLException;
+    void modificar(Producto producto) throws SQLException;
+    void reactivar(Producto producto) throws SQLException;
 }

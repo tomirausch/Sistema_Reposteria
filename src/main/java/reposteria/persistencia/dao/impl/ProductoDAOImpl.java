@@ -29,6 +29,19 @@ public class ProductoDAOImpl implements ProductoDAO {
         }
     }
 
+    public void modificar(Producto producto) throws SQLException {
+        String sql = "UPDATE productos SET nombre = ?, precio = ?, unidad = ?, medida = ? WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, producto.getNombre());
+            pstmt.setDouble(2, producto.getPrecio());
+            pstmt.setString(3, producto.getUnidad());
+            pstmt.setDouble(4, producto.getMedida());
+            pstmt.setInt(5, producto.getId());
+            pstmt.executeUpdate();
+            System.out.println("Producto modificado.");
+        }
+    }
+
     @Override
     public List<Producto> listar() throws SQLException {
         List<Producto> productos = new ArrayList<>();
@@ -46,6 +59,20 @@ public class ProductoDAOImpl implements ProductoDAO {
             }
         }
         return productos;
+    }
+
+    @Override
+    public void reactivar(Producto producto) throws SQLException {
+        String sql = "UPDATE clientes SET activo = 1 WHERE nombre = ? AND precio = ? AND unidad = ? AND medida = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, producto.getNombre());
+            pstmt.setDouble(2, producto.getPrecio());
+            pstmt.setString(3, producto.getUnidad());
+            pstmt.setDouble(4, producto.getMedida());
+            pstmt.setInt(5, producto.getId());
+            pstmt.executeUpdate();
+            System.out.println("Producto reactivado.");
+        }
     }
 
     @Override

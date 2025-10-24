@@ -49,6 +49,7 @@ public class Variante {
 
     @Override
     public String toString() {
-        return descripcion + (precioExtra.get() > 0 ? " (+$" + precioExtra + ")" : "");
+        double val = precioExtra.get();
+        return descripcion.get() + (val > 0 ? " (+$" + val + ")" : "");
     }
 }

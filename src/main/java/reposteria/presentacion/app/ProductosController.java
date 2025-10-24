@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import reposteria.logica.GestorReposteria;
 import reposteria.logica.Producto;
+import reposteria.logica.Excepciones.ValidationException;
 import reposteria.persistencia.BaseDatos;
 
 import java.io.IOException;
@@ -78,76 +79,101 @@ public class ProductosController {
 
     @FXML
     void agregarProducto() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Agregar Producto");
-        dialog.setHeaderText("Ingrese los datos del producto");
+        boolean productoValido = false;
 
-        ButtonType btnAceptar = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnAceptar, ButtonType.CANCEL);
+        // Variables para guardar los valores entre intentos
+        String nombreValor = "";
+        String precioValor = "";
+        String unidadValor = "";
+        String medidaValor = "";
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        while(!productoValido){
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Agregar Producto");
+            dialog.setHeaderText("Ingrese los datos del producto");
 
-        TextField nombre = new TextField();
-        nombre.setPromptText("Nombre del producto");
+            ButtonType btnAceptar = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(btnAceptar, ButtonType.CANCEL);
 
-        TextField precio = new TextField();
-        precio.setPromptText("Precio unitario");
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 150, 10, 10));
 
-        ComboBox<String> unidad = new ComboBox<>();
-        unidad.getItems().addAll("Kg", "Docena", "Cm");
-        unidad.setPromptText("Unidad de medida");
+            TextField nombre = new TextField(nombreValor);
+            nombre.setPromptText("Nombre del producto");
 
-        TextField medidaCm = new TextField();
-        medidaCm.setPromptText("Tamaño en cm");
-        medidaCm.setDisable(true); // deshabilitado por defecto
+            TextField precio = new TextField(precioValor);
+            precio.setPromptText("Precio unitario");
 
-        // Mostrar el campo medida solo si se selecciona “Cm”
-        unidad.setOnAction(e -> {
-            boolean esCm = "Cm".equalsIgnoreCase(unidad.getValue());
-            medidaCm.setDisable(!esCm);
-        });
+            ComboBox<String> unidad = new ComboBox<>();
+            unidad.getItems().addAll("Kg", "Docena", "Cm");
+            unidad.setValue(unidadValor);
+            unidad.setPromptText("Unidad de medida");
 
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(nombre, 1, 0);
-        grid.add(new Label("Precio:"), 0, 1);
-        grid.add(precio, 1, 1);
-        grid.add(new Label("Unidad:"), 0, 2);
-        grid.add(unidad, 1, 2);
-        grid.add(new Label("Medida (solo si es cm):"), 0, 3);
-        grid.add(medidaCm, 1, 3);
+            TextField medidaCm = new TextField();
+            medidaCm.setPromptText("Tamaño en cm");
+            medidaCm.setDisable(!"cm".equalsIgnoreCase(unidadValor)); // deshabilitado por defecto
 
-        dialog.getDialogPane().setContent(grid);
+            // Mostrar el campo medida solo si se selecciona “Cm”
+            unidad.setOnAction(e -> {
+                boolean esCm = "Cm".equalsIgnoreCase(unidad.getValue());
+                medidaCm.setDisable(!esCm);
+                medidaCm.setText(medidaValor);
+            });
 
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == btnAceptar) {
-                return ButtonType.OK;
-            }
-            return null;
-        });
+            grid.add(new Label("Nombre:"), 0, 0);
+            grid.add(nombre, 1, 0);
+            grid.add(new Label("Precio:"), 0, 1);
+            grid.add(precio, 1, 1);
+            grid.add(new Label("Unidad:"), 0, 2);
+            grid.add(unidad, 1, 2);
+            grid.add(new Label("Medida (solo si es cm):"), 0, 3);
+            grid.add(medidaCm, 1, 3);
 
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                double precioVal = Double.parseDouble(precio.getText());
-                String unidadSeleccionada = unidad.getValue();
-                String nombreProd = nombre.getText().trim().toUpperCase();
+            dialog.getDialogPane().setContent(grid);
 
-                double medidaVal = 0;
-                if ("Cm".equalsIgnoreCase(unidadSeleccionada)) {
-                    medidaVal = Double.parseDouble(medidaCm.getText());
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == btnAceptar) {
+                    return ButtonType.OK;
                 }
+                return null;
+            });
 
-                Producto nuevo = new Producto(nombreProd, precioVal, unidadSeleccionada, medidaVal);
-                gestor.agregarProducto(nuevo);
-                cargarProductos();
-                mostrarAlertaInfo("Producto agregado correctamente.");
-            } catch (NumberFormatException e) {
-                mostrarAlertaError("Error", "El precio o la medida deben ser valores numéricos.");
-            } catch (Exception e) {
-                mostrarAlertaError("Error al agregar producto", e.getMessage());
+            Optional<ButtonType> result = dialog.showAndWait();
+
+            if (result.isEmpty()) {
+                // Usuario canceló
+                return;
+            }
+
+            // Guardar valores para persistirlos en caso de error
+            nombreValor = nombre.getText();
+            precioValor = precio.getText();
+            unidadValor = unidad.getValue();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    double precioVal = Double.parseDouble(precio.getText());
+                    String unidadSeleccionada = unidad.getValue();
+                    String nombreProd = nombre.getText().trim().toUpperCase();
+
+                    double medidaVal = 0;
+                    if ("Cm".equalsIgnoreCase(unidadSeleccionada)) {
+                        medidaVal = Double.parseDouble(medidaCm.getText());
+                    }
+
+                    Producto nuevo = new Producto(nombreProd, precioVal, unidadSeleccionada, medidaVal);
+                    gestor.agregarProducto(nuevo);
+                    cargarProductos();
+                    productoValido = true;
+
+                    mostrarAlertaInfo("Producto agregado correctamente.");
+                } catch (NumberFormatException e) {
+                    mostrarAlertaError("Error", "El precio o la medida deben ser valores numéricos.");
+                } catch (Exception e) {
+                    mostrarAlertaError("Error al agregar producto", e.getMessage());
+                }
             }
         }
     }
@@ -155,7 +181,117 @@ public class ProductosController {
 
     @FXML
     void modificarProducto() {
-        new Alert(Alert.AlertType.INFORMATION, "Modificar Producto").showAndWait();
+        boolean productoValido = false;
+
+        Producto selected = productosTable.getSelectionModel().getSelectedItem();
+
+        if (selected != null) {
+            // Variables persistentes para mantener los valores ingresados
+            String nombreValor = selected.getNombre();
+            String unidadValor = selected.getUnidad();
+            String medidaValor = selected.getMedida() != 0 ? String.valueOf(selected.getMedida()) : "";
+            String precioValor = String.valueOf(selected.getPrecio());
+
+            while (!productoValido) {
+                // Crear diálogo personalizado
+                Dialog<ButtonType> dialog = new Dialog<>();
+                dialog.setTitle("Modificar Producto");
+                dialog.setHeaderText("Modifique los datos del producto");
+
+                ButtonType aceptarButtonType = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
+                dialog.getDialogPane().getButtonTypes().addAll(aceptarButtonType, ButtonType.CANCEL);
+
+                // Layout
+                GridPane grid = new GridPane();
+                grid.setHgap(10);
+                grid.setVgap(10);
+                grid.setPadding(new Insets(20, 150, 10, 10));
+
+                // Campos
+                TextField nombre = new TextField(nombreValor);
+                nombre.setPromptText("Nombre");
+
+                TextField precio = new TextField(precioValor);
+                precio.setPromptText("Precio");
+
+                ComboBox<String> unidad = new ComboBox<>();
+                unidad.getItems().addAll("kg", "docena", "cm");
+                unidad.setValue(unidadValor);
+
+                TextField medida = new TextField(medidaValor);
+                medida.setPromptText("Medida (solo si unidad = cm)");
+                medida.setDisable(!"cm".equalsIgnoreCase(unidadValor));
+
+                // Habilitar o deshabilitar campo medida según unidad seleccionada
+                unidad.setOnAction(e -> {
+                    boolean esCm = "cm".equals(unidad.getValue());
+                    medida.setDisable(!esCm);
+                    if (!esCm) medida.clear();
+                });
+
+                // Agregar al grid
+                grid.add(new Label("Nombre:"), 0, 0);
+                grid.add(nombre, 1, 0);
+                grid.add(new Label("Precio:"), 0, 1);
+                grid.add(precio, 1, 1);
+                grid.add(new Label("Unidad:"), 0, 2);
+                grid.add(unidad, 1, 2);
+                grid.add(new Label("Medida:"), 0, 3);
+                grid.add(medida, 1, 3);
+
+                dialog.getDialogPane().setContent(grid);
+
+                // Mostrar diálogo
+                Optional<ButtonType> result = dialog.showAndWait();
+
+                if (result.isEmpty() || result.get() == ButtonType.CANCEL) {
+                    return; // Usuario canceló
+                }
+
+                // Guardar valores
+                nombreValor = nombre.getText().trim();
+                unidadValor = (unidad.getValue() == null) ? "" : unidad.getValue().trim();
+                medidaValor = medida.getText().trim();
+                precioValor = precio.getText().trim();
+
+                try {
+                    double precioNum = 0.0;
+                    double medidaNum = 0.0;
+
+                    // Convierte precio si hay texto
+                    if (!precioValor.isBlank()) {
+                        precioNum = Double.parseDouble(precioValor);
+                    }
+
+                    // Solo intenta convertir medida si la unidad es "cm"
+                    if ("cm".equalsIgnoreCase(unidadValor) && !medidaValor.isBlank()) {
+                        medidaNum = Double.parseDouble(medidaValor);
+                    }
+
+                    Producto temporal = new Producto(nombreValor, precioNum, unidadValor, medidaNum);
+                    gestor.validarProducto(temporal); 
+
+                    selected.setNombre(nombreValor);
+                    selected.setUnidad(unidadValor);
+                    selected.setMedida(medidaNum);
+                    selected.setPrecio(precioNum);
+
+                    gestor.modificarProducto(selected);
+                    cargarProductos();
+                    productoValido = true;
+
+                    mostrarAlertaInfo("Producto modificado correctamente.");
+
+                } catch (ValidationException ve) {
+                    mostrarAlertaError("Error de validación", ve.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlertaError("Error al modificar producto", e.getMessage());
+                }
+            }
+        } else {
+            mostrarAlertaError("Advertencia", "Seleccione un producto para modificar.");
+        }
     }
 
     @FXML
