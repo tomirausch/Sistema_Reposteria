@@ -43,6 +43,16 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
+    public void eliminar(int id) throws SQLException {
+        String sql = "UPDATE productos SET activo = 0 WHERE id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            System.out.println("Producto eliminado.");
+        }
+    }
+
+    @Override
     public List<Producto> listar() throws SQLException {
         List<Producto> productos = new ArrayList<>();
         String sql = "SELECT * FROM productos";
@@ -54,7 +64,8 @@ public class ProductoDAOImpl implements ProductoDAO {
                         rs.getString("nombre"),
                         rs.getDouble("precio"),
                         rs.getString("unidad"),
-                        rs.getDouble("medida")
+                        rs.getDouble("medida"),
+                        rs.getInt("activo")
                 ));
             }
         }
@@ -63,13 +74,9 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
     public void reactivar(Producto producto) throws SQLException {
-        String sql = "UPDATE clientes SET activo = 1 WHERE nombre = ? AND precio = ? AND unidad = ? AND medida = ?";
+        String sql = "UPDATE productos SET activo = 1 WHERE nombre = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, producto.getNombre());
-            pstmt.setDouble(2, producto.getPrecio());
-            pstmt.setString(3, producto.getUnidad());
-            pstmt.setDouble(4, producto.getMedida());
-            pstmt.setInt(5, producto.getId());
             pstmt.executeUpdate();
             System.out.println("Producto reactivado.");
         }

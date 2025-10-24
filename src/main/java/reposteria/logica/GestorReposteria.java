@@ -59,6 +59,10 @@ public class GestorReposteria {
         productoService.modificarProducto(producto);
     }
 
+    public void eliminarProducto(int id) throws SQLException, ValidationException {
+        productoService.eliminarProducto(id);
+    }
+
     public List<Producto> listarProductos() throws SQLException {
         return productoService.listarProductos();
     }
@@ -67,6 +71,7 @@ public class GestorReposteria {
         productoService.productoValido(producto);
     }
 
+    // Pedidos
     public void crearPedido(Pedido pedido) throws SQLException, ValidationException {
         pedidoService.crearPedido(pedido);
     }

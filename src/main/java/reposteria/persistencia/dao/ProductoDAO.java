@@ -10,4 +10,5 @@ public interface ProductoDAO {
     double getPrecio(int idProducto) throws SQLException;
     void modificar(Producto producto) throws SQLException;
     void reactivar(Producto producto) throws SQLException;
+    void eliminar(int id) throws SQLException;
 }

@@ -29,6 +29,17 @@ public class Producto {
         this.activo.set(true);
     }
 
+    public Producto(int id, String nombre, double precio, String unidad, double medida, int activo){
+        this.id.set(id);
+        this.nombre.set(nombre);
+        this.precioBase.set(precio);
+        this.nombre.set(nombre);
+        this.precioBase.set(precio);
+        this.unidad.set(unidad);
+        this.medida.set(medida);
+        this.activo.set(activo == 1);
+    }
+
     public int getId() { return id.get(); }
     public IntegerProperty idProperty() { return id; }
     public String getNombre() { return nombre.get(); }

@@ -17,13 +17,10 @@ public class ProductoService {
 
     public void agregarProducto(Producto producto) throws SQLException, ValidationException {
         if (productoValido(producto)) {
-            if (!esNombreUnico(producto.getNombre())) {
-                throw new ValidationException("El nombre del producto ya está registrado en el sistema.");
-            }
-            if(!existeProducto(producto))
-                productoDAO.agregar(producto);
-            else
+            if(existeProducto(producto)){
                 productoDAO.reactivar(producto);
+            } else
+                productoDAO.agregar(producto);
         }
 
     }
@@ -31,6 +28,10 @@ public class ProductoService {
     public void modificarProducto(Producto producto) throws ValidationException, SQLException {
         if (productoValido(producto))
             productoDAO.modificar(producto);
+    }
+
+    public void eliminarProducto(int id) throws SQLException{
+        productoDAO.eliminar(id);
     }
 
     public List<Producto> listarProductos() throws SQLException {
@@ -43,16 +44,6 @@ public class ProductoService {
             throw new ValidationException("El producto con ID " + idProducto + " no existe.");
         }
         return precio;
-    }
-
-    private boolean esNombreUnico(String nombre) throws SQLException {
-        List<Producto> productos = productoDAO.listar();
-        for (Producto p : productos) {
-            if (p.getNombre().equalsIgnoreCase(nombre)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean productoValido(Producto producto) throws ValidationException {
@@ -87,14 +78,16 @@ public class ProductoService {
         return true;
     }
 
-    private boolean existeProducto(Producto producto) throws SQLException{
+    private boolean existeProducto(Producto producto) throws SQLException, ValidationException{
         List<Producto> productos = productoDAO.listar();
         for (Producto p : productos) {
             if (p.getNombre().equalsIgnoreCase(producto.getNombre()) &&
-                p.getPrecio() == producto.getPrecio() &&
-                p.getUnidad().equals(producto.getUnidad()) &&
-                p.getMedida() == producto.getMedida()) 
-                return true;
+                p.getUnidad().equalsIgnoreCase(producto.getUnidad()) &&
+                p.getMedida() == producto.getMedida()){
+                if(p.isActivo())
+                    throw new ValidationException("El producto ya está registrado en el sistema.");
+                else return true;
+            }
         }
         return false;
     }

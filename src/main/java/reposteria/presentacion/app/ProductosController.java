@@ -296,7 +296,27 @@ public class ProductosController {
 
     @FXML
     void borrarProducto() {
-        new Alert(Alert.AlertType.INFORMATION, "Borrar Producto").showAndWait();
+        Producto selected = productosTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmar Eliminación");
+            alert.setHeaderText("¿Está seguro eliminar " + selected.getNombre() + "?");
+            alert.setContentText("Esto es un borrado lógico y no elimina los datos permanentemente.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    selected.setActivo(false);
+                    gestor.eliminarProducto(selected.getId());
+                    cargarProductos();
+                    mostrarAlertaInfo("Producto eliminado correctamente.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlertaError("Error al borrar producto", e.getMessage());
+                }
+            }
+        } else {
+            mostrarAlertaError("Advertencia", "Seleccione un producto para borrar.");
+        }
     }
 
     private void mostrarAlertaInfo(String mensaje) {
